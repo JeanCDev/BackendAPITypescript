@@ -1,16 +1,29 @@
 import connection from "../database/database";
-import {Request, Response} from 'express';
 
-export default {
+export default class User{
 
-  insertUserToDatabase(req: Request, res: Response){
+  id: string | undefined;
+  name: string | undefined;
+  email: string | undefined;
+  password: string | undefined;
+
+  constructor(id?: string, name?: string, email?: string, password?: string){
+
+    this.id = id;
+    this.name = name;
+    this.email = email;
+    this.password = password;
+
+  }
+
+  insertUserToDatabase(){
 
     return new Promise((resolve, reject) =>{
 
       connection.query(`
           insert into login (user_name, user_password, user_email)
           values($1, $2, $3);
-      `,[req.body.name, req.body.password, req.body.email], (err, result) =>{
+      `,[this.name, this.password, this.email], (err, result) =>{
 
         if(err){
           return reject(err);
@@ -22,15 +35,15 @@ export default {
 
     });
 
-  },
+  }
 
-  getUsersFromDatabase(){
+  getUserFromDatabase(){
 
     return new Promise((resolve, reject) =>{
 
       connection.query(`
-        select * from login
-      `,[], (err, result) => {
+        select * from login where user_id = $1;
+      `,[this.id], (err, result) => {
 
         if(err){
           console.log(err);
@@ -42,18 +55,16 @@ export default {
 
     });
 
-  },
+  }
 
-  removeUserFromDatabase(req: Request){
-
-    const {user_id} = req.params;
+  removeUserFromDatabase(){
 
     return new Promise((resolve, reject) =>{
 
       connection.query(`
         DELETE FROM login
           WHERE user_id=$1;
-      `,[user_id], (err, result) =>{
+      `,[this.id], (err, result) =>{
 
         if(err){
           return reject(err);
@@ -65,15 +76,11 @@ export default {
 
     });
 
-  },
+  }
 
-  updateUserInformation(req: Request){
+  updateUserInformation(id: string, name: string, email: string, password:string){
 
     return new Promise((resolve, reject) =>{
-
-      const {name, email, password} = req.body;
-
-      const {user_id} = req.params;
 
       connection.query(`
         UPDATE login
@@ -81,7 +88,7 @@ export default {
           user_email = $2,
           user_password = $3
         WHERE user_id = $4
-      `,[name, email, password, user_id], (err, result) =>{
+      `,[name, email, password, id], (err, result) =>{
 
         if(err){
           return reject(err);

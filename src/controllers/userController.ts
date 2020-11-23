@@ -1,6 +1,6 @@
-import user from '../Models/user';
 import { Response, Request } from 'express';
 import createTable from '../database/createTables/createLogin'
+import User from '../Models/user';
 
 export default {
 
@@ -8,7 +8,8 @@ export default {
 
     return new Promise((resolve, reject) => {
 
-      user.getUsersFromDatabase().then(result=> {
+      let user = new User(req.params.user_id);
+      user.getUserFromDatabase().then(result=> {
 
         res.send(result);
     
@@ -24,9 +25,13 @@ export default {
 
     return new Promise((resolve, reject) =>{
 
+      const {name, email, password} = req.body;
+
       createTable.createLogin().then(results=>{
 
-        user.insertUserToDatabase(req, res).then(result=>{
+        let user = new User(undefined, name, email, password);
+
+        user.insertUserToDatabase().then(result=>{
          resolve(result);
          res.send('User inserted successfully');
         }).catch(err=>console.log(err));
@@ -41,7 +46,11 @@ export default {
 
     return new Promise((resolve, reject) =>{
 
-      user.removeUserFromDatabase(req).then(result=>{
+      const id = req.params.user_id;
+
+      let user = new User(id);
+
+      user.removeUserFromDatabase().then(result=>{
         resolve(result);
         res.send('User deleted successfully');
       }).catch(err => reject(err));
@@ -54,7 +63,12 @@ export default {
 
     return new Promise((resolve, reject) =>{
 
-      user.updateUserInformation(req).then(result=>{
+      const id = req.params.user_id;
+      const{name, email, password} = req.body;
+
+      let user = new User();
+
+      user.updateUserInformation(id, name, email, password).then(result=>{
 
         resolve(result);
         res.send(`User Updated Successfully`);
