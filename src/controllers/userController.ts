@@ -1,81 +1,112 @@
 import { Response, Request } from 'express';
-import createTable from '../database/createTables/createLogin'
+import createTable from '../database/createTables';
 import User from '../Models/user';
 
 export default {
 
   index(req: Request, res: Response){
+      
+      User.getAllUsers().then(result=>{
 
-    return new Promise((resolve, reject) => {
+        res.send(result);       
+
+      }).catch(err => res.send(err.message));
+
+  },
+
+  get(req: Request, res: Response){
 
       let user = new User(req.params.user_id);
       user.getUserFromDatabase().then(result=> {
 
         res.send(result);
     
-      }).then(result=>{
-        resolve(result);
-      }).catch(err => reject(err));
-
-    });
+      }).catch(err => res.send(err.message));    
 
   },
 
-  save(req: Request, res: Response){
+  ////////////////////////////////////////////////////////////////
+  // À IMPLEMENTAR
 
-    return new Promise((resolve, reject) =>{
+  /* search(req: Request, res: Response){
+
+
+
+  }, */
+
+  // À IMPLEMENTAR
+  ////////////////////////////////////////////////////////////////
+
+  async save(req: Request, res: Response){
 
       const {name, email, password} = req.body;
 
-      createTable.createLogin().then(results=>{
+      await createTable.createLogin().then(()=>{
 
         let user = new User(undefined, name, email, password);
 
-        user.insertUserToDatabase().then(result=>{
-         resolve(result);
-         res.send('User inserted successfully');
-        }).catch(err=>console.log(err));
-        
-      }).catch(err => reject(err));
+        if((name === '' || name === null || name === undefined) ||
+          (email=== '' || email===null || email===undefined) ||
+          (password==='' || password===null || password===undefined)
+          ){
+         
+            res.send('Missing required fields');
 
-    });
+          } else {
+
+            user.insertUserToDatabase().then(()=>{
+
+              
+              res.send('User inserted successfully');
+     
+             }).catch(err=>res.send(err.message));
+
+          }
+        
+      }).catch(err => res.send(err.message));
 
   },
 
-  delete(req: Request, res: Response){
+  async validate(req: Request, res: Response){
 
-    return new Promise((resolve, reject) =>{
+      const {email, password} = req.body;
+
+      const user = new User(undefined, undefined, email, password);
+
+      await user.validateLogin().then(result => {
+
+        res.send(result);
+  
+      }).catch(err => res.send(err.message));
+
+  },
+
+  async delete(req: Request, res: Response){
 
       const id = req.params.user_id;
 
       let user = new User(id);
 
-      user.removeUserFromDatabase().then(result=>{
-        resolve(result);
-        res.send('User deleted successfully');
-      }).catch(err => reject(err));
+      await user.removeUserFromDatabase().then(()=>{
 
-    });
+        res.send('User deleted successfully');
+
+      }).catch(err =>  res.send(err.message) );
 
   },
 
-  update(req: Request, res: Response){
-
-    return new Promise((resolve, reject) =>{
+  async update(req: Request, res: Response){
 
       const id = req.params.user_id;
       const{name, email, password} = req.body;
 
       let user = new User();
 
-      user.updateUserInformation(id, name, email, password).then(result=>{
+      await user.updateUserInformation(id, name, email, password).then(()=>{
 
-        resolve(result);
         res.send(`User Updated Successfully`);
     
-      }).catch(err => reject(err));
-
-    });
+      }).catch(err => res.send(err.message) );
 
   }
 
