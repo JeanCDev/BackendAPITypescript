@@ -6,17 +6,24 @@ export default {
 
   async index(req: Request, res: Response){
 
+    try {
       await Message.getAllMessagesFromDatabase().then(result => {
 
         res.send(result);
 
       }).catch(err =>  res.send(err.message));
+    } catch (err) {
+
+      res.send(err.message);
+
+    }
 
   },
 
   async save(req: Request, res: Response){
 
-      await createTable.createMessages().then(async()=>{
+      try{
+        await createTable.createMessages().then(async()=>{
 
         const {
           user_name, user_email, user_phone,
@@ -50,31 +57,52 @@ export default {
   
       }).catch(err => res.send(err.message));
 
+    } catch (err) {
+
+      res.send(err.message);
+
+    }
+
   },
 
   async get(req: Request, res: Response){
 
-    const {message_id} = req.params;
+    try{
+      const {message_id} = req.params;
 
-    let message = new Message(message_id);
+      let message = new Message(message_id);
 
-    await message.getMessageFromDatabase().then(result => {
-      res.send(result);
-    }).catch(err => res.send(err.message));
+      await message.getMessageFromDatabase().then(result => {
+        res.send(result);
+      }).catch(err => res.send(err.message));
+
+    } catch (err) {
+
+      res.send(err.message);
+
+    }
 
   },
 
   async delete(req: Request, res: Response){
 
-    const {message_id} = req.params;
+    try{
+      
+      const {message_id} = req.params;
 
-    let message = new Message(message_id);
+      let message = new Message(message_id);
 
-    await message.deleteMessageFromDatabase().then(result => {
+      await message.deleteMessageFromDatabase().then(result => {
 
-      res.send(result);
+        res.send(result);
 
-    }).catch(err => res.send(err.message));
+      }).catch(err => res.send(err.message));
+      
+    } catch (err) {
+
+      res.send(err.message);
+
+    }
 
   }
 

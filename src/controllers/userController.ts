@@ -5,23 +5,34 @@ import User from '../Models/user';
 export default {
 
   index(req: Request, res: Response){
-      
+    try{  
       User.getAllUsers().then(result=>{
 
         res.send(result);       
 
       }).catch(err => res.send(err.message));
+    } catch (err) {
+
+      res.send(err.message);
+
+    }
 
   },
 
   get(req: Request, res: Response){
 
+    try{
       let user = new User(req.params.user_id);
       user.getUserFromDatabase().then(result=> {
 
         res.send(result);
     
       }).catch(err => res.send(err.message));    
+    } catch (err) {
+
+      res.send(err.message);
+
+    }
 
   },
 
@@ -39,6 +50,7 @@ export default {
 
   async save(req: Request, res: Response){
 
+    try {
       const {name, email, password} = req.body;
 
       await createTable.createLogin().then(()=>{
@@ -64,49 +76,76 @@ export default {
           }
         
       }).catch(err => res.send(err.message));
+    
+    } catch (err){
+
+      res.send(err.message);
+
+    }
 
   },
 
   async validate(req: Request, res: Response){
 
-      const {email, password} = req.body;
+      try {
+        const {email, password} = req.body;
 
-      const user = new User(undefined, undefined, email, password);
+        const user = new User(undefined, undefined, email, password);
 
-      await user.validateLogin().then(result => {
+        await user.validateLogin().then(result => {
 
-        res.send(result);
-  
-      }).catch(err => res.send(err.message));
+          res.send(result);
+    
+        }).catch(err => res.send(err.message));
+      } catch (err) {
+
+        res.send(err.message);
+
+      }
 
   },
 
   async delete(req: Request, res: Response){
 
-      const id = req.params.user_id;
+      try{
+        const id = req.params.user_id;
 
-      let user = new User(id);
+        let user = new User(id);
 
-      await user.removeUserFromDatabase().then(()=>{
+        await user.removeUserFromDatabase().then(()=>{
 
-        res.send('User deleted successfully');
+          res.send('User deleted successfully');
 
-      }).catch(err =>  res.send(err.message) );
+        }).catch(err =>  res.send(err.message));
+
+      } catch(err){
+
+        res.send(err.message);
+
+      }
 
   },
 
   async update(req: Request, res: Response){
 
-      const id = req.params.user_id;
-      const{name, email, password} = req.body;
+      try{
 
-      let user = new User();
+        const id = req.params.user_id;
+        const{name, email, password} = req.body;
 
-      await user.updateUserInformation(id, name, email, password).then(()=>{
+        let user = new User();
 
-        res.send(`User Updated Successfully`);
+        await user.updateUserInformation(id, name, email, password).then(()=>{
+
+          res.send(`User Updated Successfully`);
     
-      }).catch(err => res.send(err.message) );
+        }).catch(err => res.send(err.message) );
+
+      } catch (err) {
+
+        res.send(err.message);
+
+      }
 
   }
 
