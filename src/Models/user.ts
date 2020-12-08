@@ -2,43 +2,43 @@ import connection from "../database";
 
 export default class User{
 
-  private _id: string | undefined;
-  private _name: string | undefined;
-  private _email: string | undefined;
-  private _password: string | undefined;
+  private userId: string | undefined;
+  private userName: string | undefined;
+  private userEmail: string | undefined;
+  private userPassword: string | undefined;
 
   constructor(id?: string, name?: string, email?: string, password?: string){
 
-    this._id = id;
-    this._name = name;
-    this._email = email;
-    this._password = password;
+    this.userId = id;
+    this.userName = name;
+    this.userEmail = email;
+    this.userPassword = password;
 
   }
 
   get id(){
-    return this._id;
+    return this.userId;
   }
   set id(value){
-    this._id = value;
+    this.userId = value;
   }
   get name(){
-    return this._name;
+    return this.userName;
   }
   set name(value){
-    this._name = value;
+    this.userName = value;
   }
   get email(){
-    return this._email;
+    return this.userEmail;
   }
   set email(value){
-    this._email = value;
+    this.userEmail = value;
   }
   get password(){
-    return this._password;
+    return this.userPassword;
   }
   set password(value){
-    this._password = value;
+    this.userPassword = value;
   }
 
   static getAllUsers(){

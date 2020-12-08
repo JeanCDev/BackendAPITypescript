@@ -68,7 +68,7 @@ export default {
 
             user.insertUserToDatabase().then(()=>{
 
-              
+              console.log(user);
               res.send('User inserted successfully');
      
              }).catch(err=>res.send(err.message));
