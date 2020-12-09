@@ -70,11 +70,11 @@ export default {
     try{
       const {message_id} = req.params;
 
-      let message = new Message(message_id);
+      let message = new Message(Number(message_id));
 
       await message.getMessageFromDatabase().then(result => {
         res.send(result);
-      }).catch(err => res.send(err.message));
+      }).catch(err => res.send('Message not found'));
 
     } catch (err) {
 
@@ -90,11 +90,11 @@ export default {
       
       const {message_id} = req.params;
 
-      let message = new Message(message_id);
+      let message = new Message(Number(message_id));
 
-      await message.deleteMessageFromDatabase().then(result => {
+      await message.deleteMessageFromDatabase().then(() => {
 
-        res.send(result);
+        res.send('Message Deleted Successfully');
 
       }).catch(err => res.send(err.message));
       

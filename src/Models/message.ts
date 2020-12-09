@@ -1,65 +1,65 @@
 import connection from '../database';
 export default class Message{
 
-  private _messageId: string | undefined;
-  private _userName: string | undefined;
-  private _userEmail: string | undefined;
-  private _messageSubject: string | undefined;
-  private _messageText: string | undefined;
-  private _userPhone: string | undefined;
+  private messageId: number | undefined;
+  private clientName: string | undefined;
+  private clientEmail: string | undefined;
+  private messageSubject: string | undefined;
+  private message: string | undefined;
+  private clientPhone: string | undefined;
 
   constructor(
-    messageId?:string,
+    messageId?:number,
     userName?: string, 
     userEmail?: string, 
-    messageSubject?: string, 
+    msgSubject?: string, 
     messageText?: string,
     userPhone?: string){
 
-      this._messageId = messageId;
-      this._userName = userName;
-      this._userEmail = userEmail;
-      this._messageSubject = messageSubject;
-      this._messageText = messageText;
-      this._userPhone = userPhone;
+      this.messageId = messageId;
+      this.clientName = userName;
+      this.clientEmail = userEmail;
+      this.messageSubject = msgSubject;
+      this.message = messageText;
+      this.clientPhone = userPhone;
 
     }
 
   get id() {
-    return this._messageId;
+    return this.messageId;
   }
   set id(value) {
-    this._messageId = value;
+    this.messageId = value;
   }
   get userName() {
-    return this._userName;
+    return this.clientName;
   }
   set userName(value) {
-    this._userName = value;
+    this.clientName = value;
   }
   get userEmail() {
-    return this._userEmail;
+    return this.clientEmail;
   }
   set userEmail(value) {
-    this._userEmail = value;
+    this.clientEmail = value;
   }
-  get messageSubject() {
-    return this._messageSubject;
+  get msgSubject() {
+    return this.messageSubject;
   }
-  set messageSubject(value) {
-    this._messageSubject = value;
+  set msgSubject(value) {
+    this.messageSubject = value;
   }
   get messageText() {
-    return this._messageText;
+    return this.message;
   }
   set messageText(value) {
-    this._messageText = value;
+    this.message = value;
   }
   get userPhone() {
-    return this._userPhone;
+    return this.clientPhone;
   }
   set userPhone(value) {
-    this._userPhone = value;
+    this.clientPhone = value;
   }
   
   insertMessageToDatabase(){
@@ -135,7 +135,15 @@ export default class Message{
         `SELECT * FROM messages WHERE message_id = $1`,
         [this.id], (err, result) =>{
 
-          this.fillMessageData(result.rows);
+          if(result.rows.length === 0){
+
+            reject(err);
+
+          } else {
+
+            this.fillMessageData(result.rows);
+
+          }
 
           if(err){
             reject(err);

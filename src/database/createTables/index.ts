@@ -11,7 +11,7 @@ export default {
             user_id serial not null,
             user_name varchar(256) not null,
             user_password varchar(32) not null,
-            user_email varchar(256) not null,
+            user_email varchar(256) not null unique,
           PRIMARY KEY (user_id)
           );
         `,[], (err, result) => {

@@ -22,12 +22,16 @@ export default {
   get(req: Request, res: Response){
 
     try{
-      let user = new User(req.params.user_id);
+
+      let id = Number(req.params.user_id);
+
+      let user = new User(id);
       user.getUserFromDatabase().then(result=> {
 
         res.send(result);
     
-      }).catch(err => res.send(err.message));    
+      }).catch(err => res.send('User not found'));    
+      
     } catch (err) {
 
       res.send(err.message);
@@ -108,7 +112,7 @@ export default {
   async delete(req: Request, res: Response){
 
       try{
-        const id = req.params.user_id;
+        const id = Number(req.params.user_id);
 
         let user = new User(id);
 
@@ -130,12 +134,12 @@ export default {
 
       try{
 
-        const id = req.params.user_id;
+        const id = Number(req.params.user_id);
         const{name, email, password} = req.body;
 
-        let user = new User();
+        let user = new User(id);
 
-        await user.updateUserInformation(id, name, email, password).then(()=>{
+        await user.updateUserInformation(name, email, password).then(()=>{
 
           res.send(`User Updated Successfully`);
     
