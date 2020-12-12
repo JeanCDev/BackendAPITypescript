@@ -59,8 +59,6 @@ export default {
 
       await createTable.createLogin().then(()=>{
 
-        let user = new User(undefined, name, email, password);
-
         if((name === '' || name === null || name === undefined) ||
           (email=== '' || email===null || email===undefined) ||
           (password==='' || password===null || password===undefined)
@@ -70,9 +68,10 @@ export default {
 
           } else {
 
+            let user = new User(undefined, name, email, password);
+
             user.insertUserToDatabase().then(()=>{
 
-              console.log(user);
               res.send('User inserted successfully');
      
              }).catch(err=>res.send(err.message));

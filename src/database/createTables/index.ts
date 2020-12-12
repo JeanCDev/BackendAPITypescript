@@ -54,6 +54,34 @@ export default {
 
       });
 
+    },
+
+    createProjects(){
+
+      return new Promise((resolve, reject) => {
+
+        connection.query(`
+          create table if not exists projects(
+              project_id serial not null,
+              project_name varchar(256) not null,
+              project_description varchar not null,
+              project_github_url varchar not null,
+              project_link varchar,
+              project_image_link varchar, 
+            primary key(project_id)
+          );`, [], (err, result) => {
+
+            if(err){
+              reject(err);
+            } else {
+              resolve(result);
+            }
+
+          }
+        );
+
+      });
+
     }
 
   }

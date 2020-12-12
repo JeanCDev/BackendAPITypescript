@@ -45,7 +45,9 @@ export default class User{
 
     return new Promise((resolve, reject) =>{
 
-      connection.query(`select * from login order by user_id`, [], (err, result) =>{
+      connection.query(`
+      SELECT * FROM login ORDER BY user_id`, 
+      [], (err, result) =>{
 
         let users: object[] = [];
 
@@ -79,8 +81,8 @@ export default class User{
     return new Promise((resolve, reject) =>{
 
       connection.query(`
-          insert into login (user_name, user_password, user_email)
-          values($1, $2, $3);
+          INSERT INTO login (user_name, user_password, user_email)
+          VALUES($1, $2, $3);
       `,[this.name, this.password, this.email], (err, result) =>{
 
         if(err){
@@ -100,7 +102,7 @@ export default class User{
     return new Promise((resolve, reject) =>{
 
       connection.query(`
-        select * from login where user_id = $1;
+        SELECT * FROM login WHERE user_id = $1;
       `,[this.id], (err, result) => {
 
 
@@ -113,8 +115,6 @@ export default class User{
           this.fillUserData(result.rows);
 
         }
-
-        console.log(result.rows);
 
         if(err){
           reject(err);

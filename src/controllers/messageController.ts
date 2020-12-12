@@ -29,13 +29,6 @@ export default {
           user_name, user_email, user_phone,
           message_text, message_subject
         } = req.body; 
-  
-        let message = new Message(
-          undefined,
-          user_name, user_email,  
-          message_subject, message_text, 
-          user_phone
-        );
 
         if((user_name === '' || user_name === null || user_name === undefined) ||
           (user_email=== '' || user_email===null || user_email===undefined) ||
@@ -46,6 +39,13 @@ export default {
             res.send('Missing data');
 
           } else {
+
+            let message = new Message(
+              undefined,
+              user_name, user_email,  
+              message_subject, message_text, 
+              user_phone
+            );
 
             await message.insertMessageToDatabase().then(result => {
           
