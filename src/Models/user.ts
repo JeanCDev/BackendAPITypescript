@@ -1,11 +1,12 @@
 import connection from "../database";
+import bcrypt from "bcrypt";
 
 export default class User{
 
   private userId: number | undefined;
   private userName: string | undefined;
   private userEmail: string | undefined;
-  private userPassword: string | undefined;
+  private userPassword: string | undefined | void;
 
   constructor(id?: number, name?: string, email?: string, password?: string){
 
@@ -80,18 +81,24 @@ export default class User{
 
     return new Promise((resolve, reject) =>{
 
-      connection.query(`
-          INSERT INTO login (user_name, user_password, user_email)
-          VALUES($1, $2, $3);
-      `,[this.name, this.password, this.email], (err, result) =>{
+      if(this.password){
+        this.hashPassword(this.password).then(hash => {
 
-        if(err){
-          reject(err);
-        } else {
-          resolve(result);
-        }
+          connection.query(`
+            INSERT INTO login (user_name, user_password, user_email)
+            VALUES($1, $2, $3);
+          `,[this.name, hash, this.email], (err, result) =>{
 
-      });
+            if(err){
+              reject(err);
+            } else {
+              resolve(result);
+            }
+
+          });
+          
+        });
+      }
 
     });
 
@@ -158,6 +165,8 @@ export default class User{
 
     return new Promise((resolve, reject) =>{
 
+
+      
       connection.query(`
         SELECT * FROM login WHERE user_email = $1 AND user_password = $2
       `,[this.email, this.password], (err, result) =>{
@@ -206,23 +215,27 @@ export default class User{
 
     return new Promise((resolve, reject) =>{
 
-      connection.query(`
-        UPDATE login
-          SET user_name = $1,
-          user_email = $2,
-          user_password = $3
-        WHERE user_id = $4
-      `,[newName, 
-        newEmail, 
-        newPassword, this.id], (err, result) =>{
+       this.hashPassword(newPassword).then(hash => {
 
-        if(err){
-          reject(err);
-        } else {
-          resolve(result.rowCount);
-        }
+        connection.query(`
+            UPDATE login
+              SET user_name = $1,
+              user_email = $2,
+              user_password = $3
+            WHERE user_id = $4
+          `,[newName, 
+            newEmail, 
+            hash, this.id], (err, result) =>{
 
-      });
+            if(err){
+              reject(err);
+            } else {
+              resolve(result.rowCount);
+            }
+
+          });
+
+       }); 
 
     });
 
@@ -236,6 +249,42 @@ export default class User{
       this.name = row.user_name;
       this.password = row.user_password;
       this.email = row.user_email;
+
+    });
+
+  }
+
+  hashPassword(password: string){
+
+    return new Promise((resolve, reject)=>{
+
+      bcrypt.hash(password, 10, (err, hash)=>{
+
+        if(err){
+          reject(err);
+        }else{
+          resolve(hash);
+        }
+
+      });
+
+    });
+
+  }
+
+  compareHashWithPassword(password: string, hash: string){
+
+    return new Promise((resolve, reject)=>{
+
+      bcrypt.compare(password, hash, (err, result)=>{
+
+        if(err){
+          reject(err);
+        } else {
+          resolve(result);
+        }
+
+      });
 
     });
 

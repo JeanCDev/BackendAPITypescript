@@ -28,9 +28,10 @@ export default {
         name,
         description,
         link,
-        image_url,
         github_url,
       } = req.body;
+
+      const image = req.file;
 
       createTable.createProjects().then(async ()=>{
 
@@ -40,14 +41,14 @@ export default {
           (github_url === '' || github_url === null || github_url === undefined)
         ){
 
-          res.send('Missing data');
+          res.status(500).send('Missing data');
   
         } else {
 
           let project = new Project(
             undefined, 
             name, description, 
-            github_url, link, image_url);
+            github_url, link, image.path);
           
           await project.insertProjectToDatabase().then(result=>{
   
