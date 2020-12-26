@@ -35,7 +35,6 @@ export default {
 
       createTable.createProjects().then(async ()=>{
 
-
         if((name === '' || name === null || name === undefined) ||
           (description === '' || description === null || description === undefined) ||
           (github_url === '' || github_url === null || github_url === undefined)
@@ -45,12 +44,11 @@ export default {
   
         } else {
 
-          let project = new Project(
-            undefined, 
-            name, description, 
-            github_url, link, image.path);
+          let project = new Project();
           
-          await project.insertProjectToDatabase().then(result=>{
+          await project.insertProjectToDatabase(
+            name, description, 
+            github_url, link, image.path).then(result=>{
   
             res.send('Project inserted successfully');
   
@@ -73,9 +71,9 @@ export default {
 
       const id = Number(req.params.project_id);
 
-      let project = new Project(id);
+      let project = new Project();
 
-      await project.getProjectById().then(result => {
+      await project.getProjectById(id).then(result => {
 
         res.send(result);
 
@@ -93,6 +91,8 @@ export default {
 
       const id = Number(req.params.project_id);
       
+      const image = req.file;
+
       const{
         name, description,
         link, image_url, github_url
@@ -103,18 +103,22 @@ export default {
           (github_url === '' || github_url === null || github_url === undefined)
         ){
 
-          res.send('Missing data');
+          res.send({name, description, github_url});
 
         } else {
 
-          let project = new Project(id);
+          let project = new Project();
 
-          project.updateProjectInformation(
-            name, description, 
-            github_url, link, image_url
-          ).then((result)=>{
+          await project.getProjectById(id).then(async () =>{
 
-            res.send('Project updated successfully');
+            project.updateProjectInformation(
+              name, description, 
+              github_url, link, image.path
+            ).then((result)=>{
+  
+              res.send('Project updated successfully');
+  
+            }).catch(err => res.send(err.message));
 
           }).catch(err => res.send(err.message));
 
@@ -132,14 +136,18 @@ export default {
 
       const id = Number(req.params.project_id);
 
-      let project = new Project(id);
+      let project = new Project();
 
-      await project.deleteProject().then((result) =>{
+      await project.getProjectById(id).then(async ()=>{
 
-        res.send('Project deleted successfully');
+        await project.deleteProject().then((result) =>{
 
-      }).catch((err) => res.send(err.message));
+          res.send('Project deleted successfully');
+  
+        }).catch((err) => res.send(err.message));
 
+      }).catch(err => res.send(err.message));
+      
     }catch(err){
       res.send(err.message);
     }

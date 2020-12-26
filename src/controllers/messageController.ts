@@ -40,14 +40,11 @@ export default {
 
           } else {
 
-            let message = new Message(
-              undefined,
-              user_name, user_email,  
-              message_subject, message_text, 
-              user_phone
-            );
+            let message = new Message();
 
-            await message.insertMessageToDatabase().then(result => {
+            await message.insertMessageToDatabase(
+              user_name, user_email, user_phone, message_subject, message_text
+            ).then(result => {
           
               res.send(result);
       
@@ -70,9 +67,11 @@ export default {
     try{
       const {message_id} = req.params;
 
-      let message = new Message(Number(message_id));
+      const id = Number(message_id);
 
-      await message.getMessageFromDatabase().then(result => {
+      let message = new Message();
+
+      await message.getMessageFromDatabase(id).then(result => {
         res.send(result);
       }).catch(err => res.send('Message not found'));
 
@@ -90,11 +89,17 @@ export default {
       
       const {message_id} = req.params;
 
-      let message = new Message(Number(message_id));
+      const id = Number(message_id);
 
-      await message.deleteMessageFromDatabase().then(() => {
+      let message = new Message();
 
-        res.send('Message Deleted Successfully');
+      await message.getMessageFromDatabase(id).then(async () =>{
+
+        await message.deleteMessageFromDatabase().then(() => {
+
+          res.send('Message Deleted Successfully');
+  
+        }).catch(err => res.send(err.message));
 
       }).catch(err => res.send(err.message));
       

@@ -24,6 +24,6 @@ routes.delete('/messages/:message_id', messageController.delete);
 routes.post('/projects', uploads.single('image'), projectController.save);
 routes.get('/projects', projectController.index);
 routes.get('/projects/:project_id', projectController.get);
-routes.put('/projects/:project_id', projectController.update);
+routes.put('/projects/:project_id', uploads.single('image'), projectController.update);
 routes.delete('/projects/:project_id', projectController.delete);
 export default routes;

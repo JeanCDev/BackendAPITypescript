@@ -8,20 +8,14 @@ export default class Message{
   private message: string | undefined;
   private clientPhone: string | undefined;
 
-  constructor(
-    messageId?:number,
-    userName?: string, 
-    userEmail?: string, 
-    msgSubject?: string, 
-    messageText?: string,
-    userPhone?: string){
+  constructor(){
 
-      this.messageId = messageId;
-      this.clientName = userName;
-      this.clientEmail = userEmail;
-      this.messageSubject = msgSubject;
-      this.message = messageText;
-      this.clientPhone = userPhone;
+      this.messageId;
+      this.clientName;
+      this.clientEmail;
+      this.messageSubject;
+      this.message;
+      this.clientPhone;
 
     }
 
@@ -62,7 +56,11 @@ export default class Message{
     this.clientPhone = value;
   }
   
-  insertMessageToDatabase(){
+  insertMessageToDatabase(
+    userName: string, userEmail: string,
+    userPhone: string, messageSubject: string,
+    messageText: string
+    ){
 
     return new Promise((resolve, reject) =>{
 
@@ -73,8 +71,8 @@ export default class Message{
           user_phone,
           message_subject,
           message_text) VALUES ($1, $2, $3, $4, $5)`,[
-            this.userName, this.userEmail, this.userPhone, 
-            this.messageSubject, this.messageText
+            userName, userEmail, userPhone, 
+            messageSubject, messageText
           ], (err, result)=>{
 
             if(err){
@@ -99,13 +97,9 @@ export default class Message{
 
         result.rows.forEach((row)=>{
 
-          let message = new Message(
-            row.user_name,
-            row.user_email, 
-            row.message_subject,
-            row.message_text,
-            row.user_phone
-          );
+          let message = new Message();
+
+          message.fillMessageData(result.rows);
 
           if(message){
             message.id = row.message_id;
@@ -127,13 +121,13 @@ export default class Message{
 
   }
 
-  getMessageFromDatabase(){
+  getMessageFromDatabase(id: number){
 
     return new Promise((resolve, reject) =>{
 
       connection.query(
         `SELECT * FROM messages WHERE message_id = $1`,
-        [this.id], (err, result) =>{
+        [id], (err, result) =>{
 
           if(result.rows.length === 0){
 

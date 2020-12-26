@@ -9,20 +9,14 @@ export default class Project{
   private projectLink: string | undefined;
   private projectImageUrl: string | undefined;
 
-  constructor(
-    id?: number, 
-    name?: string, 
-    description?: string,
-    projectGithub?: string,
-    link?: string,
-    imageUrl?: string){
+  constructor(){
 
-      this.projectId = id;
-      this.projectName = name;
-      this.projectDescription = description;
-      this.githubUrl = projectGithub;
-      this.projectLink = link;
-      this.projectImageUrl = imageUrl;
+      this.projectId;
+      this.projectName;
+      this.projectDescription;
+      this.githubUrl;
+      this.projectLink;
+      this.projectImageUrl;
 
   }
 
@@ -63,7 +57,11 @@ export default class Project{
     this.githubUrl = value;
   }
 
-  insertProjectToDatabase(){
+  insertProjectToDatabase(
+    name: string, description: string,
+    githubUrl: string, projectLink: string,
+    imageUrl: string
+    ){
 
     return new Promise((resolve, reject) =>{
 
@@ -76,8 +74,8 @@ export default class Project{
           project_image_link
         ) VALUES ($1, $2, $3, $4, $5);
       `,[
-        this.name, this.description, 
-        this.githubUrl, this.link, this.imageUrl], (err, result)=>{
+        name, description, 
+        githubUrl, projectLink, imageUrl], (err, result)=>{
 
           if(err){
             reject(err);
@@ -103,12 +101,9 @@ export default class Project{
 
         result.rows.forEach(row=>{
 
-          let project = new Project(
-            row.project_id, 
-            row.project_name, row.project_description,
-            row.project_github_url, row.project_link, 
-            row.project_image_link
-          );
+          let project = new Project();
+
+          project.fillProjectInformation(result.rows);
 
           projects.push(project);
 
@@ -126,13 +121,13 @@ export default class Project{
 
   }
 
-  getProjectById(){
+  getProjectById(id: number){
     
     return new Promise((resolve, reject) =>{
 
       connection.query(`
         SELECT * FROM projects WHERE project_id = $1
-      `,[this.id], (err, result)=>{
+      `,[id], (err, result)=>{
 
         if(!result.rows.length || !result.rows[0] == undefined){
           reject(err);

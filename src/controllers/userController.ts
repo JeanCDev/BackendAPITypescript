@@ -25,8 +25,8 @@ export default {
 
       let id = Number(req.params.user_id);
 
-      let user = new User(id);
-      user.getUserFromDatabase().then(result=> {
+      let user = new User();
+      user.getUserFromDatabase(id).then(result=> {
 
         res.send(result);
     
@@ -68,9 +68,9 @@ export default {
 
           } else {
 
-            let user = new User(undefined, name, email, password);
+            let user = new User();
 
-            user.insertUserToDatabase().then(()=>{
+            user.insertUserToDatabase(name, email, password).then(()=>{
 
               res.send('User inserted successfully');
      
@@ -93,13 +93,13 @@ export default {
       try {
         const {email, password} = req.body;
 
-        const user = new User(undefined, undefined, email, password);
+        const user = new User();
 
-        await user.validateLogin().then(result => {
+        await user.validateLogin(email, password).then(result => {
 
           res.send(result);
     
-        }).catch(err => res.send(err.message));
+        }).catch(err => res.send('Email or password incorrect!'));
       } catch (err) {
 
         res.send(err.message);
@@ -113,13 +113,17 @@ export default {
       try{
         const id = Number(req.params.user_id);
 
-        let user = new User(id);
+        let user = new User();
 
-        await user.removeUserFromDatabase().then(()=>{
+        await user.getUserFromDatabase(id).then(async() =>{
 
-          res.send('User deleted successfully');
+          await user.removeUserFromDatabase().then(()=>{
 
-        }).catch(err =>  res.send(err.message));
+            res.send('User deleted successfully');
+  
+          }).catch(err =>  res.send(err.message));
+
+        }).catch(err => res.send(err.message)); 
 
       } catch(err){
 
@@ -136,13 +140,17 @@ export default {
         const id = Number(req.params.user_id);
         const{name, email, password} = req.body;
 
-        let user = new User(id);
+        let user = new User();
 
-        await user.updateUserInformation(name, email, password).then(()=>{
+        await user.getUserFromDatabase(id).then(async()=>{
 
-          res.send(`User Updated Successfully`);
-    
-        }).catch(err => res.send(err.message) );
+          await user.updateUserInformation(name, email, password).then(()=>{
+
+            res.send(`User Updated Successfully`);
+      
+          }).catch(err => res.send(err.message) );
+
+        }).catch(err => res.send(err.message));
 
       } catch (err) {
 

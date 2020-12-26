@@ -8,12 +8,12 @@ export default class User{
   private userEmail: string | undefined;
   private userPassword: string | undefined | void;
 
-  constructor(id?: number, name?: string, email?: string, password?: string){
+  constructor(){
 
-    this.userId = id;
-    this.userName = name;
-    this.userEmail = email;
-    this.userPassword = password;
+    this.userId;
+    this.userName;
+    this.userEmail;
+    this.userPassword;
 
   }
 
@@ -54,12 +54,9 @@ export default class User{
 
         result.rows.forEach(row =>{
 
-          let user = new User(
-            row.user_id, 
-            row.user_name,
-            row.user_email,
-            row.user_password
-          );
+          let user = new User();
+
+          user.fillUserData(result.rows);
 
           users.push(user);
 
@@ -77,40 +74,38 @@ export default class User{
 
   }
 
-  insertUserToDatabase(){
+  insertUserToDatabase(name: string, email: string, password: string){
 
     return new Promise((resolve, reject) =>{
 
-      if(this.password){
-        this.hashPassword(this.password).then(hash => {
+      this.hashPassword(password).then(hash => {
 
-          connection.query(`
-            INSERT INTO login (user_name, user_password, user_email)
-            VALUES($1, $2, $3);
-          `,[this.name, hash, this.email], (err, result) =>{
+        connection.query(`
+          INSERT INTO login (user_name, user_password, user_email)
+          VALUES($1, $2, $3);
+        `,[name, hash, email], (err, result) =>{
 
-            if(err){
-              reject(err);
-            } else {
-              resolve(result);
-            }
+          if(err){
+            reject(err);
+          } else {
+            resolve(result);
+          }
 
-          });
-          
         });
-      }
+        
+      });
 
     });
 
   }
 
-  getUserFromDatabase(){
+  getUserFromDatabase(id: number){
 
     return new Promise((resolve, reject) =>{
 
       connection.query(`
         SELECT * FROM login WHERE user_id = $1;
-      `,[this.id], (err, result) => {
+      `,[id], (err, result) => {
 
 
         if(result.rows.length === 0){
@@ -161,27 +156,31 @@ export default class User{
   // À implementar
   ////////////////////////////////////////////////////////////////
 
-  validateLogin(){
+  validateLogin(email: string, password: string){
 
     return new Promise((resolve, reject) =>{
 
-
-      
       connection.query(`
-        SELECT * FROM login WHERE user_email = $1 AND user_password = $2
-      `,[this.email, this.password], (err, result) =>{
+        SELECT * FROM login WHERE user_email = $1
+      `,[email], (err, results) =>{
 
-        if(!result.rows.length || !result.rows[0] == undefined){
-          reject('Login e/ou senha inválidos');
-        } else {
-          this.fillUserData(result.rows);
-        }
+        let hash = results.rows[0].user_password;
 
-        if(err){
-          reject(err);
-        } else {
-          resolve(this);
-        }
+        this.compareHashWithPassword(password, hash).then(result =>{
+
+          if(result === false){
+            reject(err);
+          } else {
+            this.fillUserData(results.rows);
+          }
+  
+          if(err){
+            reject(err);
+          } else {
+            resolve(this);
+          }
+
+        });
 
       });
 
