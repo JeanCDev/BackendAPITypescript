@@ -1,6 +1,7 @@
 import { Response, Request } from 'express';
 import createTable from '../database/createTables';
 import User from '../Models/user';
+import jwt from 'jsonwebtoken';
 
 export default {
 
@@ -39,18 +40,6 @@ export default {
     }
 
   },
-
-  ////////////////////////////////////////////////////////////////
-  // À IMPLEMENTAR
-
-  /* search(req: Request, res: Response){
-
-
-
-  }, */
-
-  // À IMPLEMENTAR
-  ////////////////////////////////////////////////////////////////
 
   async save(req: Request, res: Response){
 
@@ -95,9 +84,16 @@ export default {
 
         const user = new User();
 
-        await user.validateLogin(email, password).then(result => {
+        await user.validateLogin(email, password).then((result: any) => {
 
-          res.send(result);
+          const tokenSecret = String(process.env.TOKEN_SECRET);
+
+          const token = jwt.sign({
+            id: result.id,
+            email: result.email
+          }, tokenSecret);
+
+          res.header("auth-token", token).send(token);
     
         }).catch(err => res.send('Email or password incorrect!'));
       } catch (err) {

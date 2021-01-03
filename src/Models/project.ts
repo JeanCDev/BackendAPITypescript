@@ -1,4 +1,5 @@
 import connection from '../database';
+import fs from 'fs';
 
 export default class Project{
 
@@ -103,7 +104,7 @@ export default class Project{
 
           let project = new Project();
 
-          project.fillProjectInformation(result.rows);
+          project.fillProjectInformation(row);
 
           projects.push(project);
 
@@ -132,7 +133,7 @@ export default class Project{
         if(!result.rows.length || !result.rows[0] == undefined){
           reject(err);
         } else {
-          this.fillProjectInformation(result.rows);
+          this.fillProjectInformation(result.rows[0]);
         }
 
         if(err){
@@ -154,6 +155,15 @@ export default class Project{
       connection.query(`
         DELETE FROM projects WHERE project_id = $1;`,
         [this.id], (err, result)=>{
+
+          fs.unlink(String(this.imageUrl), err =>{
+
+            if(err){
+              reject(err);
+              return;
+            }
+
+          });
 
           if(err){
             reject(err);
@@ -177,6 +187,15 @@ export default class Project{
   {
 
     return new Promise((resolve, reject) =>{
+
+      fs.unlink(String(this.imageUrl), err =>{
+
+        if(err){
+          reject(err);
+          return;
+        }
+
+      });
 
       connection.query(`
       UPDATE projects 
@@ -202,18 +221,14 @@ export default class Project{
 
   }
 
-  fillProjectInformation(data: object[]){
+  fillProjectInformation(data: any){
 
-    data.forEach((row:any) =>{
-
-      this.id = row.project_id;
-      this.name = row.project_name;
-      this.description = row.project_description;
-      this.github = row.project_github_url;
-      this.link = row.project_link;
-      this.imageUrl= row.project_image_link;
-
-    });
+    this.id = data.project_id;
+    this.name = data.project_name;
+    this.description = data.project_description;
+    this.github = data.project_github_url;
+    this.link = data.project_link;
+    this.imageUrl= data.project_image_link;
 
   }
 

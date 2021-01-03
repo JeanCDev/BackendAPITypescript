@@ -49,14 +49,16 @@ export default class User{
       connection.query(`
       SELECT * FROM login ORDER BY user_id`, 
       [], (err, result) =>{
-
+        
         let users: object[] = [];
 
         result.rows.forEach(row =>{
 
           let user = new User();
 
-          user.fillUserData(result.rows);
+          console.log(row);
+
+          user.fillUserData(row);
 
           users.push(user);
 
@@ -114,7 +116,7 @@ export default class User{
 
         } else {
 
-          this.fillUserData(result.rows);
+          this.fillUserData(result.rows[0]);
 
         }
 
@@ -130,32 +132,6 @@ export default class User{
 
   }
 
-  ////////////////////////////////////////////////////////////////
-  // À implementar
-
-  /* search(){
-    return new Promise((resolve, reject) =>{
-
-      connection.query(`
-        SELECT * FROM login WHERE user_name LIKE $1
-      `,[this.name], (err, result) =>{
-        
-        this.fillUserData(result.rows);
-
-        if(err){
-          reject(err);
-        } else {
-          resolve(this);
-        }
-
-      });
-
-    });
-  } */
-  
-  // À implementar
-  ////////////////////////////////////////////////////////////////
-
   validateLogin(email: string, password: string){
 
     return new Promise((resolve, reject) =>{
@@ -164,23 +140,29 @@ export default class User{
         SELECT * FROM login WHERE user_email = $1
       `,[email], (err, results) =>{
 
-        let hash = results.rows[0].user_password;
+        if(!results.rows[0]){
+          reject(err);
+        } else{
+          
+          let hash = results.rows[0].user_password;
 
-        this.compareHashWithPassword(password, hash).then(result =>{
+          this.compareHashWithPassword(password, hash).then(result =>{
 
-          if(result === false){
-            reject(err);
-          } else {
-            this.fillUserData(results.rows);
-          }
-  
-          if(err){
-            reject(err);
-          } else {
-            resolve(this);
-          }
+            if(result === false){
+              reject(err);
+            } else {
+              this.fillUserData(results.rows[0]);
+            }
+    
+            if(err){
+              reject(err);
+            } else {
+              resolve(this);
+            }
 
-        });
+          });
+
+        }        
 
       });
 
@@ -240,16 +222,12 @@ export default class User{
 
   }
 
-  fillUserData(data: object[]){
-
-    data.forEach((row:any) =>{
-
-      this.id = row.user_id;
-      this.name = row.user_name;
-      this.password = row.user_password;
-      this.email = row.user_email;
-
-    });
+  fillUserData(data: any){
+    
+      this.id = data.user_id;
+      this.name = data.user_name;
+      this.password = data.user_password;
+      this.email = data.user_email;
 
   }
 

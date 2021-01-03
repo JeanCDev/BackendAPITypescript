@@ -101,7 +101,7 @@ export default {
   
         }).catch(err => res.send(err.message));
 
-      }).catch(err => res.send(err.message));
+      }).catch(err => res.send("Message not found"));
       
     } catch (err) {
 

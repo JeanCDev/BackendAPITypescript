@@ -95,7 +95,7 @@ export default {
 
       const{
         name, description,
-        link, image_url, github_url
+        link, github_url
       } = req.body;
 
       if((name === '' || name === null || name === undefined) ||
@@ -146,7 +146,7 @@ export default {
   
         }).catch((err) => res.send(err.message));
 
-      }).catch(err => res.send(err.message));
+      }).catch(err => res.send("Project not found"));
       
     }catch(err){
       res.send(err.message);

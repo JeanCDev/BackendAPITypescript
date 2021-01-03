@@ -1,5 +1,4 @@
 import path from "path";
-
 import express from 'express';
 import routes from './routes';
 import 'dotenv/config';
