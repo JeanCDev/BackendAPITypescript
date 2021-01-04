@@ -91,7 +91,9 @@ export default {
           const token = jwt.sign({
             id: result.id,
             email: result.email
-          }, tokenSecret);
+          }, tokenSecret,{
+            expiresIn:43200
+          });
 
           res.header("auth-token", token).send(token);
     
