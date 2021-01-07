@@ -66,6 +66,10 @@ export default class Project{
 
     return new Promise((resolve, reject) =>{
 
+      const imgURL = imageUrl.replace(`\\`,'/');
+
+      console.log(projectLink);
+
       connection.query(`
         INSERT INTO projects(
           project_name,
@@ -76,7 +80,7 @@ export default class Project{
         ) VALUES ($1, $2, $3, $4, $5);
       `,[
         name, description, 
-        githubUrl, projectLink, imageUrl], (err, result)=>{
+        githubUrl, projectLink, imgURL], (err, result)=>{
 
           if(err){
             reject(err);
