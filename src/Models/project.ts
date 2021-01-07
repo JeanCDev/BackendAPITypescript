@@ -68,8 +68,6 @@ export default class Project{
 
       const imgURL = imageUrl.replace(`\\`,'/');
 
-      console.log(projectLink);
-
       connection.query(`
         INSERT INTO projects(
           project_name,
