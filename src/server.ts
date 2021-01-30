@@ -2,18 +2,18 @@ import path from "path";
 import express from 'express';
 import routes from './routes';
 import 'dotenv/config';
-//import cors from 'cors';
+import cors from 'cors';
 
 const app = express();
 
-/* let corsOptions = {
+let corsOptions = {
   origin: process.env.ACCESS_ORIGIN,
   optionsSuccessStatus: 200,
-}; */
+};
 
-//app.use(cors(corsOptions));
+app.use(cors(corsOptions));
 
-app.use((req, res, next) => {
+/* app.use((req, res, next) => {
 
   res.header(
     'Access-Control-Allow-Origin', 
@@ -25,7 +25,7 @@ app.use((req, res, next) => {
   );
   next();
 
-});
+}); */
 
 app.use(express.json());
 

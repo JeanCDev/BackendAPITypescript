@@ -99,7 +99,7 @@ export default class Message{
 
           let message = new Message();
 
-          message.fillMessageData(result.rows);
+          message.fillMessageData(row);
 
           if(message){
             message.id = row.message_id;
@@ -135,7 +135,7 @@ export default class Message{
 
           } else {
 
-            this.fillMessageData(result.rows);
+            this.fillMessageData(result.rows[0]);
 
           }
 
@@ -173,18 +173,14 @@ export default class Message{
 
   }
 
-  fillMessageData(data: object[]){
+  fillMessageData(data: any){
 
-    data.forEach((row:any) =>{
-
-      this.id = row.message_id;
-      this.userName = row.user_name;
-      this.userEmail = row.user_email;
-      this.userPhone = row.user_phone;
-      this.messageSubject = row.message_subject;
-      this.messageText = row.message_text;
-
-    });
+      this.id = data.message_id;
+      this.userName = data.user_name;
+      this.userEmail = data.user_email;
+      this.userPhone = data.user_phone;
+      this.messageSubject = data.message_subject;
+      this.messageText = data.message_text;
 
   }
 
