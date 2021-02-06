@@ -56,8 +56,6 @@ export default class User{
 
           let user = new User();
 
-          console.log(row);
-
           user.fillUserData(row);
 
           users.push(user);

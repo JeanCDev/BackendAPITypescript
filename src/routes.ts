@@ -8,7 +8,7 @@ import verifyToken from './config/verifyToken';
 const routes = Router();
 
 // user routes
-routes.post('/login', verifyToken, userController.save);
+routes.post('/login', userController.save);
 routes.post('/login-validation', userController.validate);
 routes.get('/login', verifyToken, userController.index);
 routes.get('/login/:user_id', verifyToken, userController.get);
