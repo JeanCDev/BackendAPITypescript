@@ -119,9 +119,9 @@ export default {
 
             res.send('User deleted successfully');
   
-          }).catch(err =>  res.send(err.message));
+          }).catch(err =>  res.send('User not found'));
 
-        }).catch(err => res.send(err.message)); 
+        }).catch(err => res.send('User not found')); 
 
       } catch(err){
 
